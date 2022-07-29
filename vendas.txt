@@ -1,0 +1,9 @@
+Nome: Dwight
+Cargo: Vendedor
+CPF: 004.821.094-41
+Nome: Fusca Usado
+Marca: Volkswagen
+Valor: 10000
+Cliente: Leonidas Espartano
+CPF: 005.842.998-41
+

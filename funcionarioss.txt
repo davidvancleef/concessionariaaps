@@ -1,0 +1,15 @@
+Nome: Jim
+Cargo: Vendedor
+CPF: 005.942.410-42
+
+Nome: Dwight
+Cargo: Vendedor
+CPF: 004.821.094-41
+
+Nome: Stanley
+Cargo: Vendedor
+CPF: 006.843.821-48
+Nome: Ryan Howard
+Cargo: Vendedor
+CPF: 004.091.068-82
+

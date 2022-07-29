@@ -1,0 +1,12 @@
+Nome: Firefox 2019
+Marca: Volkswagen
+Valor: 42000
+
+Nome: Ferrari GT 2021
+Marca: Ferrari
+Valor: 180000
+
+Nome: Ford Camaro 2020
+Marca: Ford
+Valor: 120000
+

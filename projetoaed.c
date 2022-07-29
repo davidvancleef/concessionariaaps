@@ -16,7 +16,7 @@ char cpf[16];
 typedef struct
 {
 char nome[50];
-int cpf;
+char cpf[20];
 } cliente;
 
 typedef struct
@@ -24,16 +24,11 @@ typedef struct
 char nome[50];
 char marca[30];
 char valorVenda[20];
-char codigo[20];
-cliente clienteAtual;
 } veiculo;
 
-/*
 void listarClientes();
-void geraNotaFiscal(funcionario vendedor, cliente comprador);
 void interfaceVendedor();
-void cadastraVenda();
-*/
+void cadastrarVenda();
 void interfaceGerencia();
 void cadastraFuncionario();
 void cadastraVeiculo();
@@ -41,12 +36,14 @@ void listarFuncionarios();
 void listarAutomoveis();
 void listarVendas();
 void criaArquivos();
+void listarFuncionarioss();
 int demitirFuncionario();
+void removerVeiculo(int codigoDoCarro);
 
 void limpaBuffer(){
     int c = 0;
     while ((c = getchar()) != '\n' && c != EOF) {}
-    return; 
+    return;
 }
 
 
@@ -59,10 +56,8 @@ int main (){
     limpaBuffer();
 	  if (escolha == 1)
 		  interfaceGerencia();
-    /*
 	  else if (escolha == 2)
 		  interfaceVendedor();
-	  */
   }
   return 0;
 }
@@ -72,21 +67,18 @@ void criaArquivos(){
   if (vendas == NULL){
     vendas = fopen ("vendas.txt", "w");
     fprintf (vendas,"Log de vendas da Davizin Automoveis.\n");
-    
    }
-   fclose(vendas);
+  fclose(vendas);
   FILE *funcionarios = fopen("funcionarios.txt", "r");
   if (funcionarios == NULL){
     funcionarios = fopen ("funcionarios.txt", "w");
     fprintf (funcionarios,"Lista de funcionarios da Davizin Automoveis.\n\n");
-    
   }
   fclose(funcionarios);
   FILE *clientes = fopen("clientes.txt", "r");
   if (clientes == NULL){
     clientes = fopen ("clientes.txt", "w");
     fprintf (clientes,"Lista dos ultimos clientes da Davizin Automoveis.\n");
-    
   }
   fclose(clientes);
   FILE *automoveis = fopen("automoveis.txt", "r");
@@ -95,12 +87,6 @@ void criaArquivos(){
     fprintf (automoveis,"Lista dos carros disponiveis na Davizin Automoveis.\n");
   }
   fclose(automoveis);
-  FILE *alugueis = fopen("alugueis.txt", "r");
-  if (alugueis == NULL){
-    alugueis = fopen ("alugueis.txt", "w");
-    fprintf (alugueis,"Log de alugueis ativos da Davizin Automoveis.\n");
-  }  
-  fclose(alugueis);
 }
 /*///////////////////////////////////////////////////// FUNCOES COMUNS AS DUAS INTERFACES//////////////////////////////////*/
 
@@ -110,7 +96,7 @@ void listarAutomoveis(){
   FILE *automoveis = fopen("automoveis.txt", "r");
   do{  
     c = fgetc(automoveis);
-    printf("%c" , c);        
+    printf("%c" , c);
     }while (c != EOF);
   fclose(automoveis);
   printf ("-----------------------------------------------------\n");
@@ -178,6 +164,18 @@ void listarFuncionarios(){
   printf ("-----------------------------------------------------\n");
 }
 
+void listarFuncionarioss(){
+  char c;
+  printf(" -----------------------------------------------------\n Funcionarios da Davizin Automoveis\n\n");
+  FILE *funcionarioss = fopen("funcionarioss.txt", "r");
+  do{  
+    c = fgetc(funcionarioss);
+    printf("%c" , c);        
+    }while (c != EOF);
+  fclose(funcionarioss);
+  printf ("-----------------------------------------------------\n");
+}
+
 void cadastraFuncionario(){
   funcionario *novo;
   novo = (funcionario *)malloc(sizeof(funcionario));
@@ -186,6 +184,7 @@ void cadastraFuncionario(){
     exit(1);
   }
   FILE *funcionarios = fopen("funcionarios.txt", "a+");
+  FILE *funcionarioss = fopen("funcionarioss.txt", "a+");
     if(funcionarios == NULL){
     printf("Erro de abertura no arquivo\n");
     exit(1);
@@ -193,18 +192,22 @@ void cadastraFuncionario(){
   printf ("Qual e o nome do novo funcionario?\n");
     gets(novo->nome);
     fprintf(funcionarios, "Nome: %s\n", novo->nome);
+    fprintf(funcionarioss, "Nome: %s\n", novo->nome);
   printf ("Qual sera o cargo do novo funcionario?\n");
     gets(novo->cargo);
     fprintf(funcionarios, "Cargo: %s\n", novo->cargo);
+    fprintf(funcionarioss, "Cargo: %s\n", novo->cargo);
   printf ("Qual sera o salario do novo funcionario?\n");
     gets(novo->salario);
     fprintf(funcionarios, "Salario: %s\n", novo->salario); 
   printf ("Qual e o CPF do novo funcionario?\n");
     gets(novo->cpf);
     fprintf(funcionarios, "CPF: %s\n\n", novo->cpf);
+    fprintf(funcionarioss, "CPF: %s\n\n", novo->cpf);
   printf ("\nFUNCIONARIO CADASTRADO!\nNome: %s\nCargo: %s\nSalario: %s\nCPF: %s\n\n", novo->nome, novo->cargo, novo->salario, novo->cpf);
   free (novo);
   fclose(funcionarios);
+  fclose(funcionarioss);
 }
 
 void cadastraVeiculo(){
@@ -221,10 +224,10 @@ void cadastraVeiculo(){
   printf ("Qual e a marca do novo veiculo?\n");
     gets(carro->marca);
     fprintf(automoveis, "Marca: %s\n", carro->marca);
-  printf ("Qual sera o preco do novo veiculo?\n");
+  printf ("Qual sera o preco, em reais, do novo veiculo? Ex: 180.000\n");
     gets(carro->valorVenda);
     fprintf(automoveis, "Valor: %s\n\n", carro->valorVenda); 
-  printf ("\nVEICULO CADASTRADO!\nNome: %s\nMarca: %s\nPreco para venda: %s\n", carro->nome, carro->marca, carro->valorVenda);
+  printf ("\nVEICULO CADASTRADO!\nNome: %s\nMarca: %s\nPreco para venda: %s\n\n", carro->nome, carro->marca, carro->valorVenda);
   free(carro);
   fclose(automoveis);
 }
@@ -244,7 +247,7 @@ int demitirFuncionario(){
     printf("Nao foi possivel criar fptr1!\n");
     return 0;
   }
-  fptr2 = fopen(temp, "w"); // open the temporary file in write mode 
+  fptr2 = fopen(temp, "w");
   if (!fptr2) 
   {
     printf("Nao foi possivel criar fptr2!\n");
@@ -269,15 +272,15 @@ int demitirFuncionario(){
   }
   fclose(fptr1);
   fclose(fptr2);
-  fptr1=fopen(temp,"r");  /* mudar pra funcionarios depois da fase de testes */
-  ch=fgetc(fptr1); 
+  fptr2=fopen(temp,"r");  /* mudar pra funcionarios depois da fase de testes */
+  ch=fgetc(fptr2); 
   printf("Tem certeza de que deseja remover esse funcionario do sistema?\n"); 
   while(ch!=EOF) 
   { 
     printf("%c",ch); 
-    ch=fgetc(fptr1); 
+    ch=fgetc(fptr2); 
   }
-  fclose(fptr1);
+  fclose(fptr2);
   scanf ("%d", &z);
   if (z == 0)
     return 0;
@@ -316,56 +319,238 @@ int demitirFuncionario(){
 /*///////////////////////////////////////////////////// INTERFACE DE VENDEDOR /////////////////////////////////////////////*/
 /*///////////////////////////////////////////////////// INTERFACE DE VENDEDOR /////////////////////////////////////////////*/
 /*///////////////////////////////////////////////////// INTERFACE DE VENDEDOR /////////////////////////////////////////////*/
-/*
+
 void interfaceVendedor(){
   int escolha = 0;
-  printf ("Escolha uma das opcoes listadas. \n");
-  printf ("1 - Iniciar cadastro de venda.\n2 - Exibir ultimas vendas.\n3 - Cadastrar um aluguel.\n4 - Exibir lista dos automoveis do patio.\n");
-  while (escolha < 1 || escolha > 4){
+  while (escolha != 4){
+    printf ("Escolha uma das opcoes listadas. \n");
+    printf ("1 - Iniciar cadastro de venda.\n2 - Exibir ultimas vendas.\n3 - Exibir lista dos automoveis do patio.\n4 - Voltar ao menu.\n");
     scanf ("%d", &escolha);
-    limpa();
+    limpaBuffer();
   switch (escolha){
       case 1:
-        cadastraVenda();
+        cadastrarVenda();
       break;
       case 2:
         listarVendas();
       break;
       case 3:
-        cadastraAluguel(); 
-      break;
-      case 4:
         listarAutomoveis();
       break;
-      }
     }
+  }
 }
 
-void cadastraVenda(){
-  funcionario vendedor;
-  cliente comprador;
-  int valorDavenda;
-  FILE *vendas = fopen("vendas.txt", "a+");
-  if(vendas == NULL){
+void removerVeiculo(int codigoDoCarro){
+  int ctr = 0;
+  FILE *fptr1, *fptr2;
+  char automoveis[MAX] = "automoveis.txt";
+  char str[MAX], temp[] = "temp.txt";
+  fptr1 = fopen(automoveis, "r");
+  if (!fptr1) 
+  {
+    printf("Nao foi possivel criar fptr1!\n");
+  }
+  fptr2 = fopen(temp, "w");
+  if (!fptr2) 
+  {
+    printf("Nao foi possivel criar fptr2!\n");
+  }
+  while (!feof(fptr1)) 
+  {
+    strcpy(str, "\0");
+    fgets(str, MAX, fptr1);
+    if (!feof(fptr1)) 
+    {
+      ctr++;
+      if (ctr != codigoDoCarro+1 && ctr != codigoDoCarro+2 && ctr!= codigoDoCarro+3 && ctr!=codigoDoCarro+4) 
+        fprintf(fptr2, "%s", str);
+    }
+  }
+  fclose(fptr1);
+  fclose(fptr2);
+  remove(automoveis);      // apaga o funcionarios txt
+  rename(temp, automoveis);  // faz o arquivo temporario virar o novo funcionarios txt
+} 
+
+void cadastrarVenda(){
+  cliente *comprador;
+  comprador = (cliente *)malloc(sizeof(cliente));
+  char ch, c;
+  int ctr, deuCertoF = 0, deuCertoC = 0, confirma = 0, carro = 0, func = 0, nf;
+  int lno, codigoAutomovel = 0, codigoVenda = 25, valorDavenda, deuCertoCliente = 0;
+  char data[15];
+  char opcao[10];
+  FILE *fptr3;
+  if(!fptr3){
     printf("Erro de abertura no arquivo.");
     exit(1);
   }
-  printf ("Que vendedor esta iniciando esse processamento?\n");
-    gets(vendedor.nome);
-    fprintf(vendas, "Vendedor: %s\n", vendedor.nome);
-  printf ("Qual e o nome do cliente?\n");
-    gets(comprador.nome);
-    fprintf(funcionarios, "Nome: %s\n", novo.nome);
-  printf ("Qual sera o cargo do novo funcionario?\n");
-    gets(novo.cargo);
-    fprintf(funcionarios, "Cargo: %s\n", novo.cargo);
-  printf ("Qual sera o salario do novo funcionario?\n");
-    gets(novo.salario);
-    fprintf(funcionarios, "Salario: %s\n", novo.salario); 
-  printf ("Qual e o CPF do novo funcionario?\n");
-    gets(novo.cpf);
-    fprintf(funcionarios, "CPF: %s\n\n", novo.cpf);
-  printf ("\nFUNCIONARIO CADASTRADO!\nNome: %s\nCargo: %s\nSalario: %s\nCPF: %s\n", novo.nome, novo.cargo, novo.salario, novo.cpf);
-  fclose(funcionarios);
+  FILE *fptr1, *fptr2;
+  char funcionarios[MAX] = "funcionarios.txt";
+  char str[MAX], temp[] = "temp.txt";
+  char automoveis[MAX] = "automoveis.txt";
+  char tempp[MAX] = "tempp.txt"; 
+  char vendastemp[MAX] = "vendastemp.txt";
+  while (deuCertoF == 0){
+    lno = 0;
+    ctr = 0;
+    fptr1 = fopen(funcionarios, "r");
+    if (!fptr1){
+      printf ("Erro de abertura de arquivo.");
+      exit(1);
+    }
+    fptr2 = fopen(temp, "w");
+    if (!fptr2){
+      printf ("Erro de abertura de arquivo.");
+      exit(1);
+    }
+    printf ("Qual o codigo do vendedor que esta iniciando esse processamento? (Se precisar da lista de funcionarios, digite 0)\n");
+    while (lno == 0){
+      scanf("%d", &lno);
+      if (lno != 0)
+        break;
+      else
+        listarFuncionarioss();
+    }
+    if (lno > 1)
+      lno = (5 * (lno-1));
+    else
+      lno = 0;
+    while (!feof(fptr1)) 
+    {
+      strcpy(str, "\0");
+      fgets(str, MAX, fptr1);
+      if (!feof(fptr1)){
+        ctr++;
+        if (ctr == lno+4 || ctr == lno+1 || ctr == lno+2) 
+          fprintf(fptr2, "%s", str);
+        }
+    }
+    fclose(fptr1);
+    fclose(fptr2);
+    fptr2=fopen(temp,"r");
+    ch = fgetc(fptr2); 
+    while(ch!=EOF) 
+    {  
+      printf("%c",ch);
+      ch=fgetc(fptr2); 
+    }
+    printf("\nEsse e o funcionario que esta a fazer o cadastro?\n1 - Sim          0 - Nao\n"); 
+    scanf ("%d", &confirma);
+    limpaBuffer();
+    fclose(fptr2);
+    if (confirma == 1)
+      deuCertoF = 1;
+    }
+    while (deuCertoC == 0){
+      lno = 0;
+      ctr = 0;
+      printf ("Qual o numero do automovel que sera vendido na lista? (Se precisar da lista de automoveis, digite 0)\n");
+      while (lno == 0){
+        scanf("%d", &lno);
+        if (lno != 0)
+          break;
+        else
+          listarAutomoveis();
+        }
+      fptr1 = fopen(automoveis, "r");
+      if (!fptr1){
+        printf ("Erro de abertura de arquivo.");
+        exit(1);
+      }
+      fptr2 = fopen(tempp, "w");
+      if (!fptr2){
+        printf ("Erro de abertura de arquivo.");
+        exit(1);
+      }
+      limpaBuffer();
+      if (lno > 1)
+        lno = (4 * (lno-1));
+      else
+        lno = 0;
+      carro = lno;
+      while (!feof(fptr1)) 
+      {
+        strcpy(str, "\0");
+        fgets(str, MAX, fptr1);
+        if (!feof(fptr1)){
+          if (ctr == lno || ctr == lno+1 || ctr == lno+2) 
+            fprintf(fptr2, "%s", str);
+            ctr++;
+        }
+      }
+      fclose(fptr1);
+      fclose(fptr2);
+      fptr2=fopen(tempp,"r");
+      ch = fgetc(fptr2);
+      while(ch!=EOF) 
+      {  
+        printf("%c",ch);
+        ch=fgetc(fptr2); 
+      }
+      fclose(fptr2);
+      printf("\nEsse e o carro que vai ser vendido?\n1 - Sim          0 - Nao\n"); 
+      scanf ("%d", &confirma);
+      limpaBuffer();
+      if (confirma == 1)
+        deuCertoC = 1;
+    }
+    while (deuCertoCliente == 0){
+      printf ("Digite o nome do cliente que esta adquirindo o produto.\n");
+      gets(comprador->nome);
+      printf ("Digite o CPF do cliente que esta adquirindo o produto.\n");
+      gets(comprador->cpf);
+      printf ("Confirmar dados do comprador e concluir a venda?\n1 - Confirmar  0 - Corrigir\n");
+      scanf ("%d", &deuCertoCliente);
+      limpaBuffer();
+    }
+    fptr3 = fopen("vendas.txt", "a+");
+    fptr2 = fopen(temp, "r");
+    while (!feof(fptr2)) 
+    {
+      strcpy(str, "\0");
+      fgets(str, MAX, fptr2);
+      if (!feof(fptr2)) 
+      {
+        fprintf(fptr3, "%s", str);
+      }
+    }
+    fclose(fptr2);
+    fptr2 = fopen(tempp, "r");
+    while (!feof(fptr2)) 
+    {
+      strcpy(str, "\0");
+      fgets(str, MAX, fptr2);
+      if (!feof(fptr2)) 
+      {
+        fprintf(fptr3, "%s", str);
+      }
+    }
+    fprintf (fptr3,"Cliente: %s\nCPF: %s\n\n", comprador->nome, comprador->cpf);
+    fclose(fptr2);
+    fclose(fptr3);
+    printf ("---------------------------------------\nVenda cadastrada com sucesso!\n---------------------------------------\nDeseja verificar a nota fiscal desta venda?\n1 - Sim     0 - Nao\n");
+    scanf ("%d", &nf);
+    if (nf == 1){
+      printf("-----------------------------------------------------\n");
+      printf ("Davizin Automoveis LTDA\nCNPJ: 80.933-646/0001-63\nInscricao Estadual: 256847126\nCEP: 89107-000\n");
+      fptr3 = fopen(temp, "r");
+      do{  
+        c = fgetc(fptr3);
+        printf("%c" , c);        
+      } while (c != EOF);
+      fclose(fptr3);
+      fptr3 = fopen(tempp, "r");
+      do{  
+        c = fgetc(fptr3);
+        printf("%c" , c);        
+      } while (c != EOF);
+      fclose(fptr3);
+      printf ("Cliente: %s\n", comprador->nome);
+      printf ("CPF: %s\n", comprador->cpf);
+      printf ("-----------------------------------------------------\n");
+    }
+    removerVeiculo(carro);
+    free(comprador);
 }
-*/

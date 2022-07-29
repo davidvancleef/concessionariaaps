@@ -1,0 +1,20 @@
+Nome: Jim
+Cargo: Vendedor
+Salario: 1500
+CPF: 005.942.410-42
+
+Nome: Dwight
+Cargo: Vendedor
+Salario: 1900
+CPF: 004.821.094-41
+
+Nome: Stanley
+Cargo: Vendedor
+Salario: 2000
+CPF: 006.843.821-48
+
+Nome: Ryan Howard
+Cargo: Vendedor
+Salario: 2100
+CPF: 004.091.068-82
+

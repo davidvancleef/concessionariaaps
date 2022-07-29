@@ -1,0 +1,3 @@
+Nome: Fusca Usado
+Marca: Volkswagen
+Valor: 10000
